@@ -14,6 +14,47 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [0.2.0] - 2026-02-13
+
+### Adicionado
+- **FEAT** - Implementação do frontend Next.js 14 com App Router
+  - Estrutura de monorepo com Turborepo
+  - Configuração completa do TailwindCSS com tema customizado
+  - Sistema de dark/light mode (next-themes)
+  - Arquivos: `apps/frontend/*`
+
+- **FEAT** - Página de login elegante e minimalista
+  - Design executivo com ícone de balança (Scale)
+  - Campos de email e senha com validação visual
+  - Toggle de visibilidade de senha
+  - Suporte a dark/light mode
+  - Arquivos: `apps/frontend/src/app/(auth)/login/page.tsx`
+
+- **FEAT** - Componentes UI base (shadcn/ui style)
+  - Button, Input, Label, Card com variantes
+  - ThemeProvider e ThemeToggle
+  - Arquivos: `apps/frontend/src/components/ui/*`
+
+- **FEAT** - Layout do dashboard com sidebar
+  - Sidebar colapsável com navegação
+  - Header com busca e notificações
+  - Menu de administração
+  - Arquivos: `apps/frontend/src/components/layouts/*`
+
+- **FEAT** - Página inicial do dashboard
+  - Cards de estatísticas (propostas, em andamento, concluídas, taxa de conversão)
+  - Lista de propostas recentes com status
+  - Design responsivo
+  - Arquivos: `apps/frontend/src/app/(dashboard)/dashboard/page.tsx`
+
+- **CHORE** - Windsurf Workflows para desenvolvimento consistente
+  - `/new-module` - Criar módulo NestJS
+  - `/new-component` - Criar componente React
+  - `/new-agent` - Criar agente de IA
+  - Arquivos: `.windsurf/workflows/*`
+
+---
+
 ## [0.1.0] - 2026-02-12
 
 ### Adicionado
@@ -67,5 +108,5 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## Links
 
-- [Repositório](https://github.com/mpflaw/mpf-proposals)
-- [Issues](https://github.com/mpflaw/mpf-proposals/issues)
+- [Repositório](https://github.com/Gustemp/mpf-law-proposals)
+- [Issues](https://github.com/Gustemp/mpf-law-proposals/issues)
