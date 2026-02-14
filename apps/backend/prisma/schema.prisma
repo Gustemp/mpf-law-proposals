@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  COLLABORATOR
+}
+
+enum ProposalStatus {
+  DRAFT
+  BRIEFING
+  REVIEW
+  STYLING
+  LAYOUT
+  COMPLETED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+  name         String
+  role         Role     @default(COLLABORATOR)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  briefings    Briefing[]
+  proposals    Proposal[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+model Briefing {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  rawInput    String?  @db.Text
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  proposals   Proposal[]
+
+  @@map("briefings")
+}
+
+model Proposal {
+  id          String         @id @default(cuid())
+  title       String
+  content     String?        @db.Text
+  status      ProposalStatus @default(DRAFT)
+  briefingId  String
+  briefing    Briefing       @relation(fields: [briefingId], references: [id])
+  templateId  String?
+  template    Template?      @relation(fields: [templateId], references: [id])
+  styleId     String?
+  style       Style?         @relation(fields: [styleId], references: [id])
+  layoutId    String?
+  layout      Layout?        @relation(fields: [layoutId], references: [id])
+  userId      String
+  user        User           @relation(fields: [userId], references: [id])
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  documents   Document[]
+
+  @@map("proposals")
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  content     String   @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  proposals   Proposal[]
+
+  @@map("templates")
+}
+
+model Style {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  config      Json
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  proposals   Proposal[]
+
+  @@map("styles")
+}
+
+model Layout {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  config      Json
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  proposals   Proposal[]
+
+  @@map("layouts")
+}
+
+model Document {
+  id          String   @id @default(cuid())
+  filename    String
+  mimetype    String
+  path        String
+  size        Int
+  proposalId  String
+  proposal    Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@map("documents")
+}
+
+model AgentConfig {
+  id          String   @id @default(cuid())
+  agentType   String   @unique
+  name        String
+  description String?
+  config      Json
+  isActive    Boolean  @default(true)
+  version     String   @default("1.0.0")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("agent_configs")
+}

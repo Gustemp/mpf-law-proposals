@@ -14,6 +14,41 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [0.3.0] - 2026-02-14
+
+### Adicionado
+- **FEAT** - Backend NestJS com autenticação JWT completa
+  - Estrutura modular seguindo arquitetura definida
+  - Módulo de autenticação com login, registro, refresh token e logout
+  - Módulo de usuários com CRUD completo
+  - Guards (JwtAuthGuard, RolesGuard) e decorators (@Roles, @CurrentUser)
+  - Arquivos: `apps/backend/src/modules/auth/*`, `apps/backend/src/modules/users/*`
+
+- **FEAT** - Prisma ORM com schema completo
+  - Modelos: User, RefreshToken, Briefing, Proposal, Template, Style, Layout, Document, AgentConfig
+  - Enums: Role (ADMIN, COLLABORATOR), ProposalStatus
+  - Relações entre entidades
+  - Arquivos: `apps/backend/prisma/schema.prisma`
+
+- **FEAT** - Configuração do PrismaService global
+  - Conexão automática no startup
+  - Desconexão no shutdown
+  - Arquivos: `apps/backend/src/prisma/*`
+
+- **FEAT** - Estratégias Passport para autenticação
+  - JwtStrategy para validação de tokens
+  - LocalStrategy para login com email/senha
+  - Arquivos: `apps/backend/src/modules/auth/strategies/*`
+
+- **CHORE** - Configuração do projeto backend
+  - package.json com todas as dependências NestJS
+  - tsconfig.json com paths e decorators
+  - nest-cli.json
+  - .env.example com variáveis de ambiente
+  - Arquivos: `apps/backend/package.json`, `apps/backend/tsconfig.json`, `apps/backend/nest-cli.json`
+
+---
+
 ## [0.2.0] - 2026-02-13
 
 ### Adicionado
