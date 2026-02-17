@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Plus, Search, FileText, Clock, CheckCircle, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,6 +25,7 @@ const mockProposals = [
 ]
 
 export default function ProposalsPage() {
+  const router = useRouter()
   const [search, setSearch] = useState('')
 
   const filteredProposals = mockProposals.filter(
@@ -39,7 +41,7 @@ export default function ProposalsPage() {
           <h1 className="text-2xl font-semibold">Propostas</h1>
           <p className="text-muted-foreground">Gerencie suas propostas comerciais</p>
         </div>
-        <Button>
+        <Button onClick={() => router.push('/proposals/new')}>
           <Plus className="h-4 w-4 mr-2" />
           Nova Proposta
         </Button>

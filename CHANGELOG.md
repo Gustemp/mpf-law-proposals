@@ -14,6 +14,48 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [0.5.0] - 2026-02-17
+
+### Adicionado
+- **FEAT** - AI Agents Service (Serviço Desacoplado de Agentes de IA)
+  - Estrutura modular com Gateway, Orchestrator e Providers
+  - Suporte a OpenAI e Anthropic como provedores de LLM
+  - Provider Factory para troca dinâmica de modelos
+  - Arquivos: `apps/ai-agents-service/src/*`
+
+- **FEAT** - Briefing Agent
+  - Agente especializado em análise de documentos e criação de briefings
+  - Prompt otimizado para contexto jurídico
+  - Arquivos: `apps/ai-agents-service/src/agents/briefing/*`
+
+- **FEAT** - Draft Agent
+  - Agente especializado em redação de propostas comerciais
+  - Estrutura completa de proposta com 8 seções
+  - Arquivos: `apps/ai-agents-service/src/agents/draft/*`
+
+- **FEAT** - Style Agent
+  - Agente especializado em aplicação de estilo de escrita
+  - Diretrizes de tom, linguagem e formatação do escritório
+  - Arquivos: `apps/ai-agents-service/src/agents/style/*`
+
+- **FEAT** - Layout Agent
+  - Agente especializado em diagramação de documentos
+  - Marcações para conversão DOCX/PDF
+  - Arquivos: `apps/ai-agents-service/src/agents/layout/*`
+
+- **FEAT** - Página de Criação de Proposta (Fluxo Completo)
+  - Wizard com 6 etapas: Input → Briefing → Draft → Style → Layout → Complete
+  - Interface para edição em cada etapa
+  - Progress bar visual
+  - Arquivos: `apps/frontend/src/app/(dashboard)/proposals/new/*`
+
+- **FEAT** - Pipeline de Agentes
+  - Orquestrador para execução sequencial dos 4 agentes
+  - Passagem de contexto entre etapas
+  - Arquivos: `apps/ai-agents-service/src/orchestrator/*`
+
+---
+
 ## [0.4.0] - 2026-02-17
 
 ### Adicionado
