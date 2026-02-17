@@ -97,22 +97,22 @@ apps/frontend/src/
 
 ---
 
-## AGENTES DE IA DO SISTEMA
+## AGENTES DE IA DO SISTEMA (ai-agents-service)
 
-O sistema possui 4 agentes de IA em pipeline. Ao trabalhar com eles:
+O sistema possui 4 agentes de IA em pipeline **em serviço separado** (`apps/ai-agents-service`):
 
 | Agente | Localização | Responsabilidade |
 |--------|-------------|------------------|
-| Briefing Agent | `modules/ai-agents/briefing-agent/` | Gera briefing do input |
-| Draft Agent | `modules/ai-agents/draft-agent/` | Cria draft da proposta |
-| Style Agent | `modules/ai-agents/style-agent/` | Aplica estilo de escrita |
-| Layout Agent | `modules/ai-agents/layout-agent/` | Diagrama documento final |
+| Briefing Agent | `ai-agents-service/src/agents/briefing/` | Gera briefing do input |
+| Draft Agent | `ai-agents-service/src/agents/draft/` | Cria draft da proposta |
+| Style Agent | `ai-agents-service/src/agents/style/` | Aplica estilo de escrita |
+| Layout Agent | `ai-agents-service/src/agents/layout/` | Diagrama documento final |
 
-Cada agente DEVE:
-- Ter seu próprio módulo NestJS
-- Usar BullMQ para processamento assíncrono
-- Ter configurações editáveis via Admin
-- Logar todas as operações
+**Arquitetura desacoplada:**
+- Serviço independente em `:3002`
+- Providers: OpenAI e Anthropic (factory pattern)
+- Orchestrator para pipeline sequencial
+- Comunicação via HTTP com backend principal
 
 ---
 
