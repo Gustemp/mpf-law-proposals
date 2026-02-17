@@ -8,34 +8,36 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { useAuthStore } from '@/stores/auth.store'
 
 export default function LoginPage() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  
+  const { login, isLoading } = useAuthStore()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
     setError('')
 
+    if (!email || !password) {
+      setError('Por favor, preencha todos os campos')
+      return
+    }
+
     try {
-      // TODO: Integrar com API de autenticação
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Simulação de login bem-sucedido
-      if (email && password) {
-        router.push('/dashboard')
+      await login({ email, password })
+      router.push('/dashboard')
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as { response?: { data?: { message?: string } } }
+        setError(axiosError.response?.data?.message || 'Credenciais inválidas')
       } else {
-        setError('Por favor, preencha todos os campos')
+        setError('Erro ao fazer login. Tente novamente.')
       }
-    } catch (err) {
-      setError('Erro ao fazer login. Tente novamente.')
-    } finally {
-      setIsLoading(false)
     }
   }
 

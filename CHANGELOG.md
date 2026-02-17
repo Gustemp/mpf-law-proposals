@@ -14,6 +14,37 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [0.4.0] - 2026-02-17
+
+### Adicionado
+- **FEAT** - Integração frontend/backend completa
+  - Serviço de API com Axios e interceptors para refresh token
+  - Store de autenticação com Zustand (persistência)
+  - Login integrado com API real
+  - Arquivos: `apps/frontend/src/services/*`, `apps/frontend/src/stores/*`
+
+- **FEAT** - Módulo de Briefings no backend
+  - CRUD completo com controle de acesso por usuário
+  - DTOs com validação
+  - Arquivos: `apps/backend/src/modules/briefings/*`
+
+- **FEAT** - Módulo de Propostas no backend
+  - CRUD completo com status workflow
+  - Relacionamentos com Briefing, Template, Style, Layout
+  - Arquivos: `apps/backend/src/modules/proposals/*`
+
+- **FEAT** - Páginas de Propostas e Briefings no frontend
+  - Listagem com busca e filtros
+  - Cards com status visual
+  - Design responsivo
+  - Arquivos: `apps/frontend/src/app/(dashboard)/proposals/*`, `apps/frontend/src/app/(dashboard)/briefings/*`
+
+- **CHORE** - Migration inicial do Prisma executada
+  - Todas as tabelas criadas no PostgreSQL
+  - Arquivos: `apps/backend/prisma/migrations/*`
+
+---
+
 ## [0.3.0] - 2026-02-14
 
 ### Adicionado
