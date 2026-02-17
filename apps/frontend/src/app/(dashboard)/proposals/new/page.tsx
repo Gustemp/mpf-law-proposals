@@ -2,11 +2,12 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Upload, FileText, Sparkles, Loader2 } from 'lucide-react'
+import { ArrowLeft, Upload, FileText, Sparkles, Loader2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import aiAgentsService from '@/services/ai-agents.service'
 
 type Step = 'input' | 'briefing' | 'draft' | 'style' | 'layout' | 'complete'
 
@@ -20,37 +21,34 @@ export default function NewProposalPage() {
   const [draft, setDraft] = useState('')
   const [styledContent, setStyledContent] = useState('')
   const [layoutContent, setLayoutContent] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [metadata, setMetadata] = useState<{ tokensUsed: number; processingTime: number } | null>(null)
 
   const handleGenerateBriefing = async () => {
     if (!inputText.trim()) return
     
     setIsProcessing(true)
+    setError(null)
     try {
-      // TODO: Integrar com AI Agents Service
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      setBriefing(`# Briefing Gerado
-
-## Resumo Executivo
-${inputText.substring(0, 200)}...
-
-## Cliente
-[Nome do Cliente]
-
-## Escopo do Trabalho
-- Análise jurídica completa
-- Elaboração de parecer
-- Acompanhamento processual
-
-## Objetivos
-Atender às necessidades jurídicas do cliente de forma eficiente.
-
-## Complexidade
-Média
-
-## Pontos de Atenção
-- Prazos processuais
-- Documentação necessária`)
+      const response = await aiAgentsService.generateBriefing({
+        input: inputText,
+        context: { proposalId: title || undefined }
+      })
+      
+      if (response.status === 'failed') {
+        throw new Error(response.error || 'Falha ao gerar briefing')
+      }
+      
+      setBriefing(response.output || '')
+      if (response.metadata) {
+        setMetadata({
+          tokensUsed: response.metadata.tokensUsed,
+          processingTime: response.metadata.processingTime
+        })
+      }
       setStep('briefing')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao gerar briefing')
     } finally {
       setIsProcessing(false)
     }
@@ -58,27 +56,30 @@ Média
 
   const handleGenerateDraft = async () => {
     setIsProcessing(true)
+    setError(null)
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      setDraft(`# Proposta Comercial
-
-## Apresentação do Escritório
-MPFLaw é um escritório de advocacia de alto padrão...
-
-## Entendimento do Caso
-Com base no briefing apresentado...
-
-## Escopo dos Serviços
-1. Consultoria jurídica especializada
-2. Elaboração de documentos
-3. Representação em processos
-
-## Investimento
-[VALOR A DEFINIR]
-
-## Considerações Finais
-Estamos à disposição para esclarecimentos.`)
+      const response = await aiAgentsService.generateDraft({
+        input: briefing,
+        context: {
+          proposalId: title || undefined,
+          previousOutputs: { briefing }
+        }
+      })
+      
+      if (response.status === 'failed') {
+        throw new Error(response.error || 'Falha ao gerar draft')
+      }
+      
+      setDraft(response.output || '')
+      if (response.metadata) {
+        setMetadata({
+          tokensUsed: response.metadata.tokensUsed,
+          processingTime: response.metadata.processingTime
+        })
+      }
       setStep('draft')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao gerar draft')
     } finally {
       setIsProcessing(false)
     }
@@ -86,10 +87,30 @@ Estamos à disposição para esclarecimentos.`)
 
   const handleApplyStyle = async () => {
     setIsProcessing(true)
+    setError(null)
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      setStyledContent(draft.replace('MPFLaw é um escritório', 'O MPFLaw se destaca como um escritório'))
+      const response = await aiAgentsService.applyStyle({
+        input: draft,
+        context: {
+          proposalId: title || undefined,
+          previousOutputs: { briefing, draft }
+        }
+      })
+      
+      if (response.status === 'failed') {
+        throw new Error(response.error || 'Falha ao aplicar estilo')
+      }
+      
+      setStyledContent(response.output || '')
+      if (response.metadata) {
+        setMetadata({
+          tokensUsed: response.metadata.tokensUsed,
+          processingTime: response.metadata.processingTime
+        })
+      }
       setStep('style')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao aplicar estilo')
     } finally {
       setIsProcessing(false)
     }
@@ -97,22 +118,30 @@ Estamos à disposição para esclarecimentos.`)
 
   const handleApplyLayout = async () => {
     setIsProcessing(true)
+    setError(null)
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      setLayoutContent(`[H1]Proposta Comercial[/H1]
-
-[H2]Apresentação do Escritório[/H2]
-[BOLD]O MPFLaw[/BOLD] se destaca como um escritório de advocacia de alto padrão...
-
-[PAGE_BREAK]
-
-[H2]Escopo dos Serviços[/H2]
-[LIST]
-[ITEM]Consultoria jurídica especializada[/ITEM]
-[ITEM]Elaboração de documentos[/ITEM]
-[ITEM]Representação em processos[/ITEM]
-[/LIST]`)
+      const response = await aiAgentsService.applyLayout({
+        input: styledContent,
+        context: {
+          proposalId: title || undefined,
+          previousOutputs: { briefing, draft, styled: styledContent }
+        }
+      })
+      
+      if (response.status === 'failed') {
+        throw new Error(response.error || 'Falha ao aplicar layout')
+      }
+      
+      setLayoutContent(response.output || '')
+      if (response.metadata) {
+        setMetadata({
+          tokensUsed: response.metadata.tokensUsed,
+          processingTime: response.metadata.processingTime
+        })
+      }
       setStep('layout')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao aplicar layout')
     } finally {
       setIsProcessing(false)
     }
@@ -126,6 +155,36 @@ Estamos à disposição para esclarecimentos.`)
     } finally {
       setIsProcessing(false)
     }
+  }
+
+  const renderError = () => {
+    if (!error) return null
+    return (
+      <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3 text-red-700">
+        <AlertCircle className="h-5 w-5 flex-shrink-0" />
+        <div>
+          <p className="font-medium">Erro</p>
+          <p className="text-sm">{error}</p>
+        </div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="ml-auto text-red-700 hover:text-red-800"
+          onClick={() => setError(null)}
+        >
+          Fechar
+        </Button>
+      </div>
+    )
+  }
+
+  const renderMetadata = () => {
+    if (!metadata) return null
+    return (
+      <div className="text-xs text-muted-foreground text-right">
+        Tokens: {metadata.tokensUsed} | Tempo: {(metadata.processingTime / 1000).toFixed(1)}s
+      </div>
+    )
   }
 
   const renderStepContent = () => {
@@ -386,6 +445,8 @@ Estamos à disposição para esclarecimentos.`)
 
       {/* Step Content */}
       <div className="max-w-3xl mx-auto">
+        {renderError()}
+        {renderMetadata()}
         {renderStepContent()}
       </div>
     </div>

@@ -14,6 +14,22 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [0.6.0] - 2026-02-17
+
+### Adicionado
+- **FEAT** - Integração Frontend com AI Agents Service
+  - Serviço `ai-agents.service.ts` para comunicação com API de agentes
+  - Wizard de proposta conectado à API real
+  - Tratamento de erros com feedback visual
+  - Exibição de metadados (tokens, tempo de processamento)
+  - Arquivos: `apps/frontend/src/services/ai-agents.service.ts`, `apps/frontend/src/app/(dashboard)/proposals/new/page.tsx`
+
+- **CHORE** - Arquivo `.env.example` para frontend
+  - Configuração de URLs do backend e AI Agents Service
+  - Arquivos: `apps/frontend/.env.example`
+
+---
+
 ## [0.5.0] - 2026-02-17
 
 ### Adicionado
