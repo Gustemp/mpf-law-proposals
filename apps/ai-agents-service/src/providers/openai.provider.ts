@@ -5,12 +5,28 @@ import { ILLMProvider, LLMOptions, LLMResponse, ChatMessage } from './provider.i
 
 @Injectable()
 export class OpenAIProvider implements ILLMProvider {
-  private client: OpenAI;
+  private client: OpenAI | null = null;
+  private userApiKeys: Map<string, OpenAI> = new Map();
 
   constructor(private configService: ConfigService) {
-    this.client = new OpenAI({
-      apiKey: this.configService.get<string>('OPENAI_API_KEY'),
-    });
+    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
+    if (apiKey) {
+      this.client = new OpenAI({ apiKey });
+    }
+  }
+
+  setApiKey(userId: string, apiKey: string): void {
+    this.userApiKeys.set(userId, new OpenAI({ apiKey }));
+  }
+
+  private getClient(userId?: string): OpenAI {
+    if (userId && this.userApiKeys.has(userId)) {
+      return this.userApiKeys.get(userId)!;
+    }
+    if (!this.client) {
+      throw new Error('OpenAI API key not configured. Please provide your API key in settings.');
+    }
+    return this.client;
   }
 
   async generateCompletion(prompt: string, options?: LLMOptions): Promise<LLMResponse> {
@@ -25,9 +41,10 @@ export class OpenAIProvider implements ILLMProvider {
   }
 
   async generateChat(messages: ChatMessage[], options?: LLMOptions): Promise<LLMResponse> {
+    const client = this.getClient(options?.userId);
     const model = options?.model || this.configService.get<string>('DEFAULT_AI_MODEL') || 'gpt-4-turbo-preview';
 
-    const response = await this.client.chat.completions.create({
+    const response = await client.chat.completions.create({
       model,
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
       temperature: options?.temperature ?? 0.7,

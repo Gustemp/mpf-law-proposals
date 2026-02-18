@@ -8,6 +8,7 @@ export interface LLMOptions {
   temperature?: number;
   maxTokens?: number;
   systemPrompt?: string;
+  userId?: string;
 }
 
 export interface ChatMessage {
