@@ -31,12 +31,12 @@ const menuItems = [
   },
   {
     title: 'Propostas',
-    href: '/dashboard/proposals',
+    href: '/proposals',
     icon: FileText,
   },
   {
     title: 'Briefings',
-    href: '/dashboard/briefings',
+    href: '/briefings',
     icon: FileStack,
   },
 ]
@@ -68,6 +68,12 @@ const adminMenuItems = [
     icon: Settings,
   },
 ]
+
+// Helper to check if path starts with href
+const isActivePath = (pathname: string, href: string) => {
+  if (href === '/dashboard') return pathname === '/dashboard'
+  return pathname.startsWith(href)
+}
 
 export function Sidebar({ isCollapsed = false, onToggle }: SidebarProps) {
   const pathname = usePathname()
@@ -114,7 +120,7 @@ export function Sidebar({ isCollapsed = false, onToggle }: SidebarProps) {
             </span>
           )}
           {menuItems.map((item) => {
-            const isActive = pathname === item.href
+            const isActive = isActivePath(pathname, item.href)
             return (
               <Link
                 key={item.href}
@@ -142,7 +148,7 @@ export function Sidebar({ isCollapsed = false, onToggle }: SidebarProps) {
             </span>
           )}
           {adminMenuItems.map((item) => {
-            const isActive = pathname === item.href
+            const isActive = isActivePath(pathname, item.href)
             return (
               <Link
                 key={item.href}
