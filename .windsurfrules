@@ -3,24 +3,66 @@
 ## Projeto
 Sistema de Propostas Comerciais com IA | v0.7.0 | Stack: NestJS + Next.js 14 + Prisma + PostgreSQL
 
-## Estrutura
+---
+
+## Arquitetura Backend (NestJS)
 ```
-apps/backend/src/modules/   → auth, users, proposals, briefings, templates, styles, layouts
-apps/frontend/src/app/      → (auth), (dashboard)/admin/*
-apps/ai-agents-service/     → briefing, draft, style, layout agents
+apps/backend/src/
+├── modules/           # Módulos: auth, users, proposals, briefings, templates, styles, layouts
+│   └── [module]/
+│       ├── [module].module.ts
+│       ├── [module].controller.ts
+│       ├── [module].service.ts
+│       └── dto/
+├── common/            # Guards, decorators, pipes
+└── prisma/            # Schema e migrations
 ```
 
-## Regras Críticas
+## Arquitetura Frontend (Next.js 14)
+```
+apps/frontend/src/
+├── app/
+│   ├── (auth)/        # Login, registro
+│   └── (dashboard)/   # Dashboard, proposals, briefings, admin/*
+├── components/ui/     # shadcn/ui
+├── services/          # API calls
+└── stores/            # Zustand
+```
+
+## AI Agents Service (:3002)
+```
+apps/ai-agents-service/src/
+├── agents/            # briefing, draft, style, layout
+├── providers/         # openai, anthropic
+└── orchestrator/      # Pipeline
+```
+
+---
+
+## Regras de Edição
 1. **Edições mínimas** - Use `edit`/`multi_edit`, nunca reescreva arquivos inteiros
 2. **Verificar antes** - `read_file` antes de editar, `grep_search` se incerto
 3. **Prisma** - NUNCA edite schema sem migration (`npx prisma migrate dev`)
 4. **Commits** - Sempre pedir permissão antes de commit
 
 ## Nomenclatura
-- Arquivos: `kebab-case.ts` | Classes: `PascalCase` | Funções: `camelCase`
+- **Arquivos:** `kebab-case.ts`
+- **Classes:** `PascalCase`
+- **Funções/Variáveis:** `camelCase`
+- **Constantes:** `SCREAMING_SNAKE_CASE`
+
+## Criação de Arquivos
+1. Verificar se já existe com `find_by_name` ou `grep_search`
+2. Seguir estrutura acima
+3. Módulo NestJS → registrar no módulo pai (AppModule)
+4. Atualizar CHANGELOG.md
+
+---
 
 ## Proibições
 ❌ Deletar arquivos sem confirmação
 ❌ Alterar .env sem avisar
+❌ Editar Prisma schema sem migration
 ❌ Ignorar erros TypeScript
 ❌ Criar arquivos fora da estrutura
+❌ Commits automáticos sem permissão
