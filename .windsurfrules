@@ -1,157 +1,26 @@
 # MPF Proposals - Windsurf Rules
-# Regras para garantir contexto, evitar alucinações e manter código coeso
 
-## Identidade do Projeto
-Este é o projeto MPF Proposals - Sistema de Criação de Propostas Comerciais Automáticas para MPFLaw.
-Stack: NestJS (backend) + Next.js 14 (frontend) + PostgreSQL + Prisma + Redis + OpenAI/Anthropic
+## Projeto
+Sistema de Propostas Comerciais com IA | v0.7.0 | Stack: NestJS + Next.js 14 + Prisma + PostgreSQL
 
----
-
-## REGRAS CRÍTICAS DE EDIÇÃO DE CÓDIGO
-
-### 1. Edições Mínimas e Cirúrgicas
-- NUNCA reescreva arquivos inteiros. Faça apenas as alterações necessárias.
-- Use a ferramenta `edit` ou `multi_edit` para alterações pontuais.
-- Preserve TODO o código existente que não precisa ser alterado.
-- Mantenha comentários, imports e estrutura existentes intactos.
-
-### 2. Antes de Qualquer Alteração
-- SEMPRE leia o arquivo completo antes de editar usando `read_file`.
-- Verifique se a função/componente que você quer criar já existe.
-- Consulte o README.md para entender a arquitetura antes de criar novos módulos.
-- Verifique o CHANGELOG.md para entender o histórico de alterações.
-
-### 3. Após Qualquer Alteração
-- SEMPRE atualize o CHANGELOG.md com a alteração feita.
-- Use o formato: `[DATA] - [TIPO] - [DESCRIÇÃO] - [ARQUIVOS AFETADOS]`
-- Tipos válidos: FEAT, FIX, REFACTOR, DOCS, STYLE, TEST, CHORE
-
-### 4. Proteção Contra Alucinações
-- NUNCA invente funções, métodos ou APIs que não existem.
-- NUNCA assuma que um arquivo existe sem verificar com `read_file` ou `find_by_name`.
-- NUNCA crie imports para módulos que não existem no projeto.
-- Se não tiver certeza, use `grep_search` para verificar antes de referenciar.
-- Sempre verifique o package.json antes de usar uma biblioteca.
-
----
-
-## ARQUITETURA OBRIGATÓRIA
-
-### Backend (NestJS)
+## Estrutura
 ```
-apps/backend/src/
-├── modules/           # Módulos de domínio (auth, users, proposals, etc.)
-│   └── [module]/
-│       ├── [module].module.ts
-│       ├── [module].controller.ts
-│       ├── [module].service.ts
-│       ├── dto/
-│       └── entities/
-├── common/            # Código compartilhado (guards, decorators, pipes)
-├── config/            # Configurações
-└── prisma/            # Schema e migrations
+apps/backend/src/modules/   → auth, users, proposals, briefings, templates, styles, layouts
+apps/frontend/src/app/      → (auth), (dashboard)/admin/*
+apps/ai-agents-service/     → briefing, draft, style, layout agents
 ```
 
-### Frontend (Next.js 14 App Router)
-```
-apps/frontend/src/
-├── app/               # Rotas (App Router)
-│   ├── (auth)/        # Grupo de rotas públicas
-│   ├── (dashboard)/   # Grupo de rotas do colaborador
-│   └── (admin)/       # Grupo de rotas do admin
-├── components/        # Componentes React
-│   ├── ui/            # shadcn/ui
-│   └── [feature]/     # Componentes por feature
-├── hooks/             # Custom hooks
-├── lib/               # Utilitários
-├── services/          # Chamadas API
-├── stores/            # Zustand stores
-└── types/             # TypeScript types
-```
+## Regras Críticas
+1. **Edições mínimas** - Use `edit`/`multi_edit`, nunca reescreva arquivos inteiros
+2. **Verificar antes** - `read_file` antes de editar, `grep_search` se incerto
+3. **Prisma** - NUNCA edite schema sem migration (`npx prisma migrate dev`)
+4. **Commits** - Sempre pedir permissão antes de commit
 
-### Convenções de Nomenclatura
-- **Arquivos**: kebab-case (ex: `briefing-agent.service.ts`)
-- **Classes**: PascalCase (ex: `BriefingAgentService`)
-- **Funções/Variáveis**: camelCase (ex: `generateBriefing`)
-- **Constantes**: SCREAMING_SNAKE_CASE (ex: `MAX_RETRIES`)
-- **Types/Interfaces**: PascalCase com prefixo I para interfaces (ex: `IProposal`, `ProposalDTO`)
+## Nomenclatura
+- Arquivos: `kebab-case.ts` | Classes: `PascalCase` | Funções: `camelCase`
 
----
-
-## REGRAS DE CRIAÇÃO DE NOVOS ARQUIVOS
-
-### Antes de Criar
-1. Verifique se já não existe algo similar com `find_by_name` ou `grep_search`
-2. Confirme que o local está correto conforme arquitetura acima
-3. Verifique se os imports necessários existem no projeto
-
-### Ao Criar
-1. Siga os padrões existentes no projeto (copie estrutura de arquivos similares)
-2. Adicione todos os imports necessários
-3. Exporte corretamente (named exports para utilitários, default para componentes React)
-
-### Após Criar
-1. Atualize o CHANGELOG.md
-2. Se for um módulo NestJS, registre no módulo pai
-3. Se for um componente, verifique se precisa de barrel export (index.ts)
-
----
-
-## AGENTES DE IA DO SISTEMA (ai-agents-service)
-
-O sistema possui 4 agentes de IA em pipeline **em serviço separado** (`apps/ai-agents-service`):
-
-| Agente | Localização | Responsabilidade |
-|--------|-------------|------------------|
-| Briefing Agent | `ai-agents-service/src/agents/briefing/` | Gera briefing do input |
-| Draft Agent | `ai-agents-service/src/agents/draft/` | Cria draft da proposta |
-| Style Agent | `ai-agents-service/src/agents/style/` | Aplica estilo de escrita |
-| Layout Agent | `ai-agents-service/src/agents/layout/` | Diagrama documento final |
-
-**Arquitetura desacoplada:**
-- Serviço independente em `:3002`
-- Providers: OpenAI e Anthropic (factory pattern)
-- Orchestrator para pipeline sequencial
-- Comunicação via HTTP com backend principal
-
----
-
-## BANCO DE DADOS
-
-### Prisma Schema
-- Localização: `apps/backend/prisma/schema.prisma`
-- NUNCA edite o schema sem criar uma migration
-- Comando para migration: `npx prisma migrate dev --name <nome>`
-
-### Modelos Principais
-- User, Briefing, Proposal, Template, Style, Layout, Document, AgentConfig
-
----
-
-## TESTES
-
-- Backend: Jest (`*.spec.ts`)
-- Frontend: Jest + React Testing Library (`*.test.tsx`)
-- E2E: Playwright (quando implementado)
-
----
-
-## DOCUMENTOS DE REFERÊNCIA
-
-Sempre consulte antes de fazer alterações significativas:
-1. `README.md` - Arquitetura geral e stack
-2. `CHANGELOG.md` - Histórico de alterações
-3. `ARCHITECTURE.md` - Decisões arquiteturais (quando criado)
-4. `.windsurf/workflows/` - Workflows específicos
-
----
-
-## PROIBIÇÕES
-
-❌ NUNCA delete arquivos sem confirmação explícita do usuário
-❌ NUNCA altere configurações de ambiente (.env) sem avisar
-❌ NUNCA modifique o schema do Prisma sem criar migration
-❌ NUNCA instale dependências sem verificar compatibilidade
-❌ NUNCA crie arquivos fora da estrutura definida
-❌ NUNCA ignore erros de TypeScript
-❌ NUNCA faça commits automáticos sem permissão
+## Proibições
+❌ Deletar arquivos sem confirmação
+❌ Alterar .env sem avisar
+❌ Ignorar erros TypeScript
+❌ Criar arquivos fora da estrutura
