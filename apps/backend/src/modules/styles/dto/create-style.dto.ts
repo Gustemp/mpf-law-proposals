@@ -1,5 +1,4 @@
-import { IsString, IsOptional, IsBoolean } from 'class-validator';
-import { Prisma } from '@prisma/client';
+import { IsString, IsOptional, IsBoolean, IsObject } from 'class-validator';
 
 export class CreateStyleDto {
   @IsString()
@@ -9,7 +8,8 @@ export class CreateStyleDto {
   @IsOptional()
   description?: string;
 
-  config: Prisma.InputJsonValue;
+  @IsObject()
+  config: Record<string, any>;
 
   @IsBoolean()
   @IsOptional()
