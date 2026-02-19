@@ -49,7 +49,8 @@ cd apps/ai-agents-service && npm run dev
 
 ## Docs
 
+- [PROJECT_STATUS.md](./PROJECT_STATUS.md) - **Estado atual do projeto** (atualizado frequentemente)
+- [CHANGELOG.md](./CHANGELOG.md) - Histórico de versões
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - Detalhes técnicos
-- [CHANGELOG.md](./CHANGELOG.md) - Histórico
 
 © MPFLaw 2026
