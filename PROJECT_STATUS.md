@@ -1,7 +1,7 @@
 # MPF Proposals - Status do Projeto
 
-**Última atualização:** 2026-02-19  
-**Versão:** 0.7.0
+**Última atualização:** 2026-02-21  
+**Versão:** 0.8.0
 
 ---
 
@@ -29,11 +29,12 @@
 - **CRUD Proposals:** Criar/editar/deletar propostas
 - **Dashboard:** Página inicial com navegação
 - **Sidebar:** Navegação entre módulos
+- **Settings:** Configuração de API keys OpenAI/Anthropic (criptografadas)
 
 ### 🟡 Protótipo (Precisa refinamento)
 
 - **Wizard de Proposta:** UI existe, integração com IA parcial
-- **AI Agents Service:** Providers configurados mas sem API keys
+- **AI Agents Service:** Providers configurados, usuário pode fornecer API keys via Settings
 - **Páginas Admin:** Funcionais mas sem paginação/filtros avançados
 - **Dashboard:** Dados estáticos, precisa métricas reais
 
@@ -41,7 +42,7 @@
 
 | Prioridade | Funcionalidade | Descrição |
 |------------|----------------|-----------|
-| Alta | Tela de Settings | Usuário configura API key OpenAI/Anthropic |
+| ~~Alta~~ | ~~Tela de Settings~~ | ✅ Implementado em 0.8.0 |
 | Alta | Geração de PDF | Exportar proposta final |
 | Alta | Pipeline IA completo | briefing → draft → style → layout |
 | Média | Editor de Proposta | Editar conteúdo gerado |
@@ -75,7 +76,7 @@
 
 ## Próximos Passos
 
-1. [ ] Implementar tela de Settings para API keys
+1. [x] Implementar tela de Settings para API keys
 2. [ ] Testar pipeline completo de geração com IA
 3. [ ] Adicionar geração de PDF
 4. [ ] Melhorar UI das páginas admin (paginação, filtros)
@@ -87,6 +88,7 @@
 
 | Data | Versão | Mudanças |
 |------|--------|----------|
+| 2026-02-21 | 0.8.0 | Tela de Settings para API keys, criptografia AES-256-GCM, componentes toast/select |
 | 2026-02-19 | 0.7.0 | Deploy Railway completo, PostgreSQL configurado, admin criado |
 | 2026-02-18 | 0.6.0 | Módulos Styles/Layouts, páginas admin CRUD |
 | 2026-02-17 | 0.5.0 | AI Agents Service desacoplado |
