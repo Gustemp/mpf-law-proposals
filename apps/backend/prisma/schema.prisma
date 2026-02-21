@@ -34,8 +34,22 @@ model User {
   briefings    Briefing[]
   proposals    Proposal[]
   refreshTokens RefreshToken[]
+  settings     UserSettings?
 
   @@map("users")
+}
+
+model UserSettings {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  openaiApiKey    String?
+  anthropicApiKey String?
+  preferredModel  String   @default("gpt-4-turbo-preview")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("user_settings")
 }
 
 model RefreshToken {

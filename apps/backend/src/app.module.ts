@@ -7,6 +7,7 @@ import { ProposalsModule } from './modules/proposals/proposals.module';
 import { TemplatesModule } from './modules/templates/templates.module';
 import { StylesModule } from './modules/styles/styles.module';
 import { LayoutsModule } from './modules/layouts/layouts.module';
+import { SettingsModule } from './modules/settings/settings.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -23,6 +24,7 @@ import { PrismaModule } from './prisma/prisma.module';
     TemplatesModule,
     StylesModule,
     LayoutsModule,
+    SettingsModule,
   ],
 })
 export class AppModule {}
