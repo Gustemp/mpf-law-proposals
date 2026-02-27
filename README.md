@@ -2,11 +2,25 @@
 
 Sistema de Propostas Comerciais Automáticas com IA para MPFLaw.
 
-## Status: v0.7.0 ✅ Funcional
+## Status: v0.8.0 ✅ Funcional
 
 **Serviços:** Frontend (:3000) | Backend (:3001) | AI Agents (:3002)
 
 **Credenciais:** `admin@mpflaw.com` / `Admin@123`
+
+---
+
+## 🚀 Para Continuar o Desenvolvimento (Nova Sessão)
+
+```
+1. Leia PROJECT_STATUS.md para ver o estado atual
+2. Próximos passos prioritários:
+   - Pipeline IA completo (briefing → draft → style → layout)
+   - Geração de PDF
+   - Melhorar UI Admin (paginação, filtros)
+3. Deploy: Railway (auto-deploy do GitHub)
+4. Banco produção: PostgreSQL no Railway
+```
 
 ---
 
