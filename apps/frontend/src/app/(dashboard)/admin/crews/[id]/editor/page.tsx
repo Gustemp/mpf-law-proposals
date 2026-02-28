@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import ReactFlow, {
   Node,
   Edge,
@@ -18,23 +18,22 @@ import 'reactflow/dist/style.css';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, ArrowLeft, Bot, ListTodo, Wrench, Play } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, Bot, ListTodo, Wrench, Play, AlertCircle } from 'lucide-react';
 import crewsService, { Crew } from '@/services/crews.service';
 import crewAgentsService, { CrewAgent } from '@/services/crew-agents.service';
 import crewTasksService, { CrewTask } from '@/services/crew-tasks.service';
 import crewToolsService, { CrewTool } from '@/services/crew-tools.service';
+import { nodeTypes } from '@/components/flow-editor/nodes';
+import { flowToCrewAI, validateFlow } from '@/components/flow-editor/utils/flowToCrewAI';
 import Link from 'next/link';
-
-const nodeTypes = {};
 
 const defaultEdgeOptions = {
   animated: true,
-  style: { stroke: '#6366f1' },
+  style: { stroke: '#6366f1', strokeWidth: 2 },
 };
 
 export default function CrewEditorPage() {
   const params = useParams();
-  const router = useRouter();
   const crewId = params.id as string;
   const { toast } = useToast();
 
@@ -98,26 +97,14 @@ export default function CrewEditorPage() {
   const addAgentNode = (agent: CrewAgent) => {
     const newNode: Node = {
       id: `agent-${agent.id}-${Date.now()}`,
-      type: 'default',
-      position: { x: Math.random() * 400 + 100, y: Math.random() * 300 + 100 },
+      type: 'agent',
+      position: { x: Math.random() * 400 + 50, y: Math.random() * 300 + 50 },
       data: {
-        label: (
-          <div className="flex items-center gap-2 p-2">
-            <Bot className="h-4 w-4 text-blue-500" />
-            <div>
-              <div className="font-medium">{agent.name}</div>
-              <div className="text-xs text-gray-500">{agent.role}</div>
-            </div>
-          </div>
-        ),
         agentId: agent.id,
-        type: 'agent',
-      },
-      style: {
-        background: '#dbeafe',
-        border: '2px solid #3b82f6',
-        borderRadius: '8px',
-        padding: '4px',
+        name: agent.name,
+        role: agent.role,
+        goal: agent.goal,
+        llmModel: agent.llmModel,
       },
     };
     setNodes((nds) => [...nds, newNode]);
@@ -126,26 +113,14 @@ export default function CrewEditorPage() {
   const addTaskNode = (task: CrewTask) => {
     const newNode: Node = {
       id: `task-${task.id}-${Date.now()}`,
-      type: 'default',
-      position: { x: Math.random() * 400 + 100, y: Math.random() * 300 + 100 },
+      type: 'task',
+      position: { x: Math.random() * 400 + 50, y: Math.random() * 300 + 50 },
       data: {
-        label: (
-          <div className="flex items-center gap-2 p-2">
-            <ListTodo className="h-4 w-4 text-green-500" />
-            <div>
-              <div className="font-medium">{task.name}</div>
-              <div className="text-xs text-gray-500 max-w-[150px] truncate">{task.description}</div>
-            </div>
-          </div>
-        ),
         taskId: task.id,
-        type: 'task',
-      },
-      style: {
-        background: '#dcfce7',
-        border: '2px solid #22c55e',
-        borderRadius: '8px',
-        padding: '4px',
+        name: task.name,
+        description: task.description,
+        expectedOutput: task.expectedOutput,
+        agentName: task.agent?.name,
       },
     };
     setNodes((nds) => [...nds, newNode]);
@@ -154,29 +129,37 @@ export default function CrewEditorPage() {
   const addToolNode = (tool: CrewTool) => {
     const newNode: Node = {
       id: `tool-${tool.id}-${Date.now()}`,
-      type: 'default',
-      position: { x: Math.random() * 400 + 100, y: Math.random() * 300 + 100 },
+      type: 'tool',
+      position: { x: Math.random() * 400 + 50, y: Math.random() * 300 + 50 },
       data: {
-        label: (
-          <div className="flex items-center gap-2 p-2">
-            <Wrench className="h-4 w-4 text-yellow-500" />
-            <div>
-              <div className="font-medium">{tool.displayName}</div>
-              <div className="text-xs text-gray-500">{tool.type}</div>
-            </div>
-          </div>
-        ),
         toolId: tool.id,
-        type: 'tool',
-      },
-      style: {
-        background: '#fef9c3',
-        border: '2px solid #eab308',
-        borderRadius: '8px',
-        padding: '4px',
+        name: tool.name,
+        displayName: tool.displayName,
+        description: tool.description,
+        type: tool.type,
       },
     };
     setNodes((nds) => [...nds, newNode]);
+  };
+
+  const handleExecute = () => {
+    const errors = validateFlow(nodes, edges);
+    if (errors.length > 0) {
+      toast({
+        title: 'Fluxo inválido',
+        description: errors.join('. '),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const crewAIFlow = flowToCrewAI(nodes, edges, crew?.name || 'Crew');
+    console.log('CrewAI Flow:', crewAIFlow);
+    
+    toast({
+      title: 'Fluxo válido!',
+      description: `${crewAIFlow.agents.length} agents, ${crewAIFlow.tasks.length} tasks prontos para execução`,
+    });
   };
 
   if (loading) {
@@ -296,9 +279,9 @@ export default function CrewEditorPage() {
               {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
               Salvar
             </Button>
-            <Button variant="outline" disabled>
+            <Button variant="outline" onClick={handleExecute}>
               <Play className="h-4 w-4 mr-2" />
-              Executar
+              Validar
             </Button>
           </Panel>
         </ReactFlow>
