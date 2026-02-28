@@ -1,7 +1,7 @@
 # MPF Proposals - Status do Projeto
 
 **Última atualização:** 2026-02-28  
-**Versão:** 0.9.0
+**Versão:** 1.0.0
 
 ---
 
@@ -30,6 +30,8 @@
 - **Dashboard:** Página inicial com navegação
 - **Sidebar:** Navegação entre módulos
 - **Settings:** Configuração de API keys OpenAI/Anthropic (criptografadas)
+- **CrewAI CRUD:** Agents, Tasks, Tools, Crews
+- **Editor Visual:** React Flow para criar fluxos de agentes
 
 ### 🟡 Protótipo (Precisa refinamento)
 
@@ -42,9 +44,9 @@
 
 | Prioridade | Funcionalidade | Descrição |
 |------------|----------------|-----------|
-| **ALTA** | **Editor Visual CrewAI** | Interface drag-and-drop para criar fluxos de agentes |
-| Alta | CRUD Agents/Tasks/Tools/Crews | Backend e frontend para gerenciar componentes |
-| Alta | AI Executor Service (Python) | Serviço que executa fluxos CrewAI |
+| ~~ALTA~~ | ~~Editor Visual CrewAI~~ | ✅ Implementado em 1.0.0 |
+| ~~Alta~~ | ~~CRUD Agents/Tasks/Tools/Crews~~ | ✅ Implementado em 1.0.0 |
+| **Alta** | **AI Executor Service (Python)** | Serviço que executa fluxos CrewAI |
 | Média | Geração de PDF | Exportar proposta final |
 | Baixa | Notificações | Alertas de status |
 | Baixa | Testes E2E | Cobertura de testes |
@@ -72,14 +74,14 @@
 
 ---
 
-## Próximos Passos (Editor Visual CrewAI)
+## Próximos Passos
 
-1. [ ] Schema Prisma para CrewAgent, CrewTask, CrewTool, Crew
-2. [ ] Módulos NestJS com CRUD completo
-3. [ ] Páginas Admin (agents, tasks, tools, crews)
-4. [ ] Editor Visual com React Flow
+1. [x] Schema Prisma para CrewAgent, CrewTask, CrewTool, Crew
+2. [x] Módulos NestJS com CRUD completo
+3. [x] Páginas Admin (agents, tasks, tools, crews)
+4. [x] Editor Visual com React Flow
 5. [ ] AI Executor Service (Python + CrewAI)
-6. [ ] Integração e testes
+6. [ ] Integração e testes end-to-end
 
 **Documentação:**
 - `docs/CREWAI_REFERENCE.md` - Referência interna do CrewAI
@@ -91,6 +93,7 @@
 
 | Data | Versão | Mudanças |
 |------|--------|----------|
+| 2026-02-28 | 1.0.0 | Editor Visual CrewAI completo, CRUD agents/tasks/tools/crews, React Flow |
 | 2026-02-28 | 0.9.0 | Documentação CrewAI e arquitetura do editor visual, nova direção do projeto |
 | 2026-02-27 | 0.8.1 | Fix CORS para produção Railway |
 | 2026-02-21 | 0.8.0 | Tela de Settings para API keys, criptografia AES-256-GCM, componentes toast/select |
