@@ -1,7 +1,7 @@
 # MPF Proposals - Status do Projeto
 
 **Última atualização:** 2026-02-28  
-**Versão:** 1.0.0
+**Versão:** 1.1.0
 
 ---
 
@@ -31,7 +31,8 @@
 - **Sidebar:** Navegação entre módulos
 - **Settings:** Configuração de API keys OpenAI/Anthropic (criptografadas)
 - **CrewAI CRUD:** Agents, Tasks, Tools, Crews
-- **Editor Visual:** React Flow para criar fluxos de agentes
+- **Editor Visual:** React Flow com nodes customizados (Agent, Task, Tool)
+- **CrewAI Executor:** Serviço Python (FastAPI) para executar fluxos
 
 ### 🟡 Protótipo (Precisa refinamento)
 
@@ -46,7 +47,7 @@
 |------------|----------------|-----------|
 | ~~ALTA~~ | ~~Editor Visual CrewAI~~ | ✅ Implementado em 1.0.0 |
 | ~~Alta~~ | ~~CRUD Agents/Tasks/Tools/Crews~~ | ✅ Implementado em 1.0.0 |
-| **Alta** | **AI Executor Service (Python)** | Serviço que executa fluxos CrewAI |
+| ~~Alta~~ | ~~AI Executor Service (Python)~~ | ✅ Implementado em 1.1.0 |
 | Média | Geração de PDF | Exportar proposta final |
 | Baixa | Notificações | Alertas de status |
 | Baixa | Testes E2E | Cobertura de testes |
@@ -79,9 +80,11 @@
 1. [x] Schema Prisma para CrewAgent, CrewTask, CrewTool, Crew
 2. [x] Módulos NestJS com CRUD completo
 3. [x] Páginas Admin (agents, tasks, tools, crews)
-4. [x] Editor Visual com React Flow
-5. [ ] AI Executor Service (Python + CrewAI)
-6. [ ] Integração e testes end-to-end
+4. [x] Editor Visual com React Flow e nodes customizados
+5. [x] AI Executor Service (Python + FastAPI + CrewAI)
+6. [x] Integração frontend → executor
+7. [ ] Deploy do crew-executor no Railway
+8. [ ] Testes end-to-end
 
 **Documentação:**
 - `docs/CREWAI_REFERENCE.md` - Referência interna do CrewAI
@@ -93,6 +96,7 @@
 
 | Data | Versão | Mudanças |
 |------|--------|----------|
+| 2026-02-28 | 1.1.0 | Nodes customizados, conversor flowToCrewAI, serviço Python executor, integração completa |
 | 2026-02-28 | 1.0.0 | Editor Visual CrewAI completo, CRUD agents/tasks/tools/crews, React Flow |
 | 2026-02-28 | 0.9.0 | Documentação CrewAI e arquitetura do editor visual, nova direção do projeto |
 | 2026-02-27 | 0.8.1 | Fix CORS para produção Railway |
