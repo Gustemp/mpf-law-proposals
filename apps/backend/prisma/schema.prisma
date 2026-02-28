@@ -35,6 +35,7 @@ model User {
   proposals    Proposal[]
   refreshTokens RefreshToken[]
   settings     UserSettings?
+  crews        Crew[]
 
   @@map("users")
 }
@@ -168,4 +169,164 @@ model AgentConfig {
   updatedAt   DateTime @updatedAt
 
   @@map("agent_configs")
+}
+
+// ============================================
+// CREWAI VISUAL EDITOR MODELS
+// ============================================
+
+model CrewAgent {
+  id              String   @id @default(cuid())
+  name            String
+  role            String
+  goal            String   @db.Text
+  backstory       String   @db.Text
+  llmProvider     String   @default("openai")
+  llmModel        String   @default("gpt-4-turbo-preview")
+  verbose         Boolean  @default(false)
+  allowDelegation Boolean  @default(true)
+  maxIter         Int      @default(15)
+  memory          Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tools           CrewAgentTool[]
+  tasks           CrewTask[]
+  crewAgents      CrewCrewAgent[]
+
+  @@map("crew_agents")
+}
+
+model CrewTool {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  displayName String
+  description String   @db.Text
+  type        String   @default("custom")
+  parameters  Json?
+  code        String?  @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  agents      CrewAgentTool[]
+  tasks       CrewTaskTool[]
+
+  @@map("crew_tools")
+}
+
+model CrewAgentTool {
+  agentId String
+  toolId  String
+  agent   CrewAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  tool    CrewTool  @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@id([agentId, toolId])
+  @@map("crew_agent_tools")
+}
+
+model CrewTask {
+  id              String   @id @default(cuid())
+  name            String
+  description     String   @db.Text
+  expectedOutput  String   @db.Text
+  agentId         String?
+  agent           CrewAgent? @relation(fields: [agentId], references: [id])
+  asyncExecution  Boolean  @default(false)
+  humanInput      Boolean  @default(false)
+  outputFile      String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tools           CrewTaskTool[]
+  crewTasks       CrewCrewTask[]
+  contextFor      CrewTaskContext[] @relation("ContextTask")
+  contextFrom     CrewTaskContext[] @relation("DependentTask")
+
+  @@map("crew_tasks")
+}
+
+model CrewTaskTool {
+  taskId String
+  toolId String
+  task   CrewTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tool   CrewTool @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, toolId])
+  @@map("crew_task_tools")
+}
+
+model CrewTaskContext {
+  contextTaskId   String
+  dependentTaskId String
+  contextTask     CrewTask @relation("ContextTask", fields: [contextTaskId], references: [id], onDelete: Cascade)
+  dependentTask   CrewTask @relation("DependentTask", fields: [dependentTaskId], references: [id], onDelete: Cascade)
+
+  @@id([contextTaskId, dependentTaskId])
+  @@map("crew_task_contexts")
+}
+
+model Crew {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  process     String   @default("sequential")
+  verbose     Boolean  @default(true)
+  memory      Boolean  @default(false)
+  managerLlm  String?
+  maxRpm      Int?
+  variables   Json?
+  flowData    Json?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  agents      CrewCrewAgent[]
+  tasks       CrewCrewTask[]
+  executions  CrewExecution[]
+
+  @@map("crews")
+}
+
+model CrewCrewAgent {
+  crewId  String
+  agentId String
+  order   Int      @default(0)
+  crew    Crew      @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  agent   CrewAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@id([crewId, agentId])
+  @@map("crew_crew_agents")
+}
+
+model CrewCrewTask {
+  crewId String
+  taskId String
+  order  Int      @default(0)
+  crew   Crew     @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  task   CrewTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@id([crewId, taskId])
+  @@map("crew_crew_tasks")
+}
+
+model CrewExecution {
+  id          String   @id @default(cuid())
+  crewId      String
+  crew        Crew     @relation(fields: [crewId], references: [id])
+  status      String   @default("pending")
+  inputs      Json?
+  output      String?  @db.Text
+  logs        Json?
+  error       String?  @db.Text
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  userId      String
+
+  @@map("crew_executions")
 }
