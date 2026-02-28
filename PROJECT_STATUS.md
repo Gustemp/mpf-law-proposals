@@ -12,6 +12,7 @@
 | Frontend | ✅ Online | `frontend-production-*.up.railway.app` |
 | Backend | ✅ Online | `backend-production-bcaf.up.railway.app` |
 | AI Agents | ✅ Online | `ai-agents-service-*.up.railway.app` |
+| Crew Executor | 🟡 Pendente | Deploy Python/FastAPI necessário |
 | PostgreSQL | ✅ Online | Railway interno |
 
 ---
@@ -83,7 +84,7 @@
 4. [x] Editor Visual com React Flow e nodes customizados
 5. [x] AI Executor Service (Python + FastAPI + CrewAI)
 6. [x] Integração frontend → executor
-7. [ ] Deploy do crew-executor no Railway
+7. [ ] Deploy do crew-executor no Railway (arquivos prontos: Dockerfile, railway.json)
 8. [ ] Testes end-to-end
 
 **Documentação:**

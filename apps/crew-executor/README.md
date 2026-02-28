@@ -66,4 +66,35 @@ uvicorn src.main:app --reload --port 3003
 
 ## Deploy (Railway)
 
-O serviço pode ser deployado no Railway usando o Dockerfile.
+### Passo a Passo
+
+1. **No Railway Dashboard:**
+   - Clique em "New Project" → "Deploy from GitHub repo"
+   - Selecione o repositório `mpf-law-proposals`
+
+2. **Configurar o serviço:**
+   - Clique em "Add Service" → "GitHub Repo"
+   - Em "Root Directory", defina: `apps/crew-executor`
+   - Railway detectará automaticamente o Dockerfile
+
+3. **Variáveis de Ambiente (opcional):**
+   - `OPENAI_API_KEY` - Chave da OpenAI (opcional, usuário pode fornecer via request)
+   - `ANTHROPIC_API_KEY` - Chave da Anthropic (opcional)
+
+4. **Gerar Domínio:**
+   - Settings → Networking → Generate Domain
+   - URL será algo como: `crew-executor-production-*.up.railway.app`
+
+5. **Atualizar Backend:**
+   - Adicionar variável `CREW_EXECUTOR_URL` no serviço backend apontando para a URL gerada
+
+### Verificar Deploy
+
+```bash
+curl https://crew-executor-production-*.up.railway.app/health
+```
+
+Resposta esperada:
+```json
+{"status": "healthy", "timestamp": "2026-02-28T..."}
+```
