@@ -12,7 +12,11 @@ import {
   FileStack,
   LogOut,
   ChevronLeft,
-  Scale
+  Scale,
+  Bot,
+  Wrench,
+  ListTodo,
+  Workflow
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -61,6 +65,29 @@ const adminMenuItems = [
     title: 'Layouts',
     href: '/admin/layouts',
     icon: Layout,
+  },
+]
+
+const crewAIMenuItems = [
+  {
+    title: 'Crews',
+    href: '/admin/crews',
+    icon: Workflow,
+  },
+  {
+    title: 'Agentes',
+    href: '/admin/crew-agents',
+    icon: Bot,
+  },
+  {
+    title: 'Tasks',
+    href: '/admin/crew-tasks',
+    icon: ListTodo,
+  },
+  {
+    title: 'Tools',
+    href: '/admin/crew-tools',
+    icon: Wrench,
   },
 ]
 
@@ -151,6 +178,34 @@ export function Sidebar({ isCollapsed = false, onToggle }: SidebarProps) {
             </span>
           )}
           {adminMenuItems.map((item) => {
+            const isActive = isActivePath(pathname, item.href)
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+                  isCollapsed && 'justify-center'
+                )}
+              >
+                <item.icon className="h-4 w-4 flex-shrink-0" />
+                {!isCollapsed && <span>{item.title}</span>}
+              </Link>
+            )
+          })}
+        </div>
+
+        {/* CrewAI Menu */}
+        <div className="pt-4 space-y-1">
+          {!isCollapsed && (
+            <span className="text-xs font-medium text-muted-foreground px-3 py-2">
+              CrewAI
+            </span>
+          )}
+          {crewAIMenuItems.map((item) => {
             const isActive = isActivePath(pathname, item.href)
             return (
               <Link
