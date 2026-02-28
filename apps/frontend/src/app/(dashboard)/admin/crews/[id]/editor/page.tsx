@@ -18,11 +18,13 @@ import 'reactflow/dist/style.css';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, ArrowLeft, Bot, ListTodo, Wrench, Play, AlertCircle } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, Bot, ListTodo, Wrench, Play, AlertCircle, CheckCircle } from 'lucide-react';
 import crewsService, { Crew } from '@/services/crews.service';
 import crewAgentsService, { CrewAgent } from '@/services/crew-agents.service';
 import crewTasksService, { CrewTask } from '@/services/crew-tasks.service';
 import crewToolsService, { CrewTool } from '@/services/crew-tools.service';
+import settingsService from '@/services/settings.service';
+import crewExecutorService from '@/services/crew-executor.service';
 import { nodeTypes } from '@/components/flow-editor/nodes';
 import { flowToCrewAI, validateFlow } from '@/components/flow-editor/utils/flowToCrewAI';
 import Link from 'next/link';
@@ -43,6 +45,8 @@ export default function CrewEditorPage() {
   const [tools, setTools] = useState<CrewTool[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [executing, setExecuting] = useState(false);
+  const [executionResult, setExecutionResult] = useState<string | null>(null);
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -142,7 +146,7 @@ export default function CrewEditorPage() {
     setNodes((nds) => [...nds, newNode]);
   };
 
-  const handleExecute = () => {
+  const handleExecute = async () => {
     const errors = validateFlow(nodes, edges);
     if (errors.length > 0) {
       toast({
@@ -153,13 +157,61 @@ export default function CrewEditorPage() {
       return;
     }
 
-    const crewAIFlow = flowToCrewAI(nodes, edges, crew?.name || 'Crew');
-    console.log('CrewAI Flow:', crewAIFlow);
-    
-    toast({
-      title: 'Fluxo válido!',
-      description: `${crewAIFlow.agents.length} agents, ${crewAIFlow.tasks.length} tasks prontos para execução`,
-    });
+    setExecuting(true);
+    setExecutionResult(null);
+
+    try {
+      // Buscar API keys do usuário
+      const settings = await settingsService.getSettings();
+      
+      if (!settings.hasOpenaiKey && !settings.hasAnthropicKey) {
+        toast({
+          title: 'API Keys não configuradas',
+          description: 'Configure suas API keys em Configurações antes de executar',
+          variant: 'destructive',
+        });
+        setExecuting(false);
+        return;
+      }
+
+      const crewAIFlow = flowToCrewAI(nodes, edges, crew?.name || 'Crew');
+      
+      toast({
+        title: 'Executando...',
+        description: `${crewAIFlow.agents.length} agents, ${crewAIFlow.tasks.length} tasks`,
+      });
+
+      const result = await crewExecutorService.execute({
+        crew: crewAIFlow.crew,
+        agents: crewAIFlow.agents,
+        tasks: crewAIFlow.tasks,
+        tools: crewAIFlow.tools,
+        inputs: {},
+      });
+
+      if (result.status === 'completed') {
+        setExecutionResult(result.output || 'Execução concluída');
+        toast({
+          title: 'Execução concluída!',
+          description: `Tempo: ${result.executionTime?.toFixed(2)}s`,
+        });
+      } else {
+        toast({
+          title: 'Execução falhou',
+          description: result.error || 'Erro desconhecido',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Execution error:', error);
+      toast({
+        title: 'Erro na execução',
+        description: 'Verifique se o serviço de execução está rodando',
+        variant: 'destructive',
+      });
+    } finally {
+      setExecuting(false);
+    }
   };
 
   if (loading) {
@@ -279,9 +331,9 @@ export default function CrewEditorPage() {
               {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
               Salvar
             </Button>
-            <Button variant="outline" onClick={handleExecute}>
-              <Play className="h-4 w-4 mr-2" />
-              Validar
+            <Button variant="outline" onClick={handleExecute} disabled={executing}>
+              {executing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+              {executing ? 'Executando...' : 'Executar'}
             </Button>
           </Panel>
         </ReactFlow>
