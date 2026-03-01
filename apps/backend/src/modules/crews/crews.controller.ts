@@ -20,13 +20,13 @@ export class CrewsController {
   constructor(private readonly crewsService: CrewsService) {}
 
   @Post()
-  create(@Request() req: { user: { sub: string } }, @Body() createDto: CreateCrewDto) {
-    return this.crewsService.create(req.user.sub, createDto);
+  create(@Request() req: { user: { id: string } }, @Body() createDto: CreateCrewDto) {
+    return this.crewsService.create(req.user.id, createDto);
   }
 
   @Get()
-  findAll(@Request() req: { user: { sub: string } }) {
-    return this.crewsService.findAll(req.user.sub);
+  findAll(@Request() req: { user: { id: string } }) {
+    return this.crewsService.findAll(req.user.id);
   }
 
   @Get(':id')
